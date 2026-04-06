@@ -1,0 +1,11 @@
+{
+  "generated_at": "2026-04-06T06:58:59.366822Z",
+  "project_base": "/content/drive/My Drive/PgpTextMining",
+  "stage2_dir": "/content/drive/My Drive/PgpTextMining/Phase0_Results/Stage2_ML_Baseline_20250821_064325",
+  "selected_notebooks": {
+    "SohnProject1.ipynb": "/content/drive/My Drive/Colab Notebooks/SohnProject1.ipynb",
+    "NewPgp.ipynb": "/content/drive/My Drive/Colab Notebooks/NewPgp.ipynb",
+    "8_15_All_NewPgp.ipynb": "/content/drive/My Drive/Colab Notebooks/8 15 All NewPgp.ipynb"
+  },
+  "repo_url": "https://github.com/Jay99Sohn/pgp-literature-mining-inhibitor-prediction.git"
+}

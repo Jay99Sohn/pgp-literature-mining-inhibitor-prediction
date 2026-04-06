@@ -1,0 +1,34 @@
+{
+  "supreme_baseline": {
+    "combination": "combined",
+    "model": "RandomForest",
+    "performance": {
+      "roc_auc_mean": 0.8064653784219,
+      "roc_auc_ci": [
+        0.7581055900621119,
+        0.8481458477110649
+      ],
+      "mcc_mean": 0.4178827385131309,
+      "precision_mean": 0.7036850027367269,
+      "recall_mean": 0.4747619047619048,
+      "f1_mean": 0.5601251207452573
+    }
+  },
+  "experiment_metadata": {
+    "cv_folds": 5,
+    "n_bootstrap": 1000,
+    "random_seed": 42,
+    "timestamp": "2025-08-21T12:26:33.790335",
+    "n_compounds": 522,
+    "feature_dimensions": {
+      "morgan": 2048,
+      "rdkit": 12,
+      "combined": 2060
+    }
+  },
+  "learning_curve_analysis": {
+    "final_validation_auc": 0.7755463538072235,
+    "train_val_gap": 0.21931329530865684,
+    "auc_improvement": NaN
+  }
+}

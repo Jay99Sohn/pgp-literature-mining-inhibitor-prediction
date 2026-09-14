@@ -15,7 +15,7 @@ This project started from a literature-driven workflow for organizing P-gp-relat
   - **inhibitor/substrate-oriented** problem reformulation
 - A **final 522-compound inhibitor dataset** with recovered SMILES
 - A **traditional machine learning benchmark** using Morgan fingerprints and RDKit descriptors
-- Exploratory notebook history for later **GNN / XAI follow-up analysis**
+- A **graph-model comparison** (GCN, GAT, GINE) scored on the baseline’s own folds
 
 ### Why this project matters
 P-glycoprotein is a major ATP-dependent efflux transporter involved in **drug disposition, multidrug resistance, and transporter-mediated pharmacokinetic behavior**.
@@ -47,14 +47,42 @@ This project focused on turning noisy literature-derived interaction information
   - Final curated inhibitor dataset with recovered SMILES
   - **522 compounds**
 
-### Best saved benchmark
-**Traditional ML baseline**
-- **Dataset:** 522 compounds
-- **Features:** Morgan fingerprints + RDKit descriptors
-- **Model:** RandomForest
-- **Evaluation:** Nested 5-fold stratified cross-validation
-- **ROC-AUC:** **0.8065**
-- **95% CI:** **0.7581–0.8481**
+### Benchmark
+
+522 compounds, nested 5-fold stratified cross-validation, bootstrap 95 %
+confidence intervals over the five fold values. Tabular and graph models are
+scored on **identical outer folds**, so the comparison is paired.
+
+| Model | Representation | ROC-AUC | 95 % CI |
+|---|---|---|---|
+| **RandomForest** | Morgan 2048 + 12 RDKit descriptors | **0.8044** | 0.7550–0.8450 |
+| GAT | molecular graph, atom + bond features | 0.7564 | 0.7260–0.7907 |
+| GCN | molecular graph, atom features only | 0.7126 | 0.6889–0.7363 |
+| GINE | molecular graph, atom + bond features | 0.6333 | 0.5917–0.6782 |
+
+**No graph model reached the descriptor baseline.** Per fold the Random Forest
+wins 5 of 5 against GCN, 5 of 5 against GINE and 4 of 5 against GAT. GCN and GINE
+fall below it by a margin five folds can resolve (paired t, p = 0.012 and p = 0.003);
+GAT, at p = 0.114, is not separated from the baseline either way. The claim the
+comparison supports is that none of the three improved on the baseline.
+
+GINE is the weakest despite carrying the richest representation — bond features
+and an MLP aggregator. On 522 molecules the extra capacity costs more than the
+representation returns, which is the same direction the whole comparison points:
+on this dataset the constraint is not how the molecule is represented.
+
+The labels are counts of how a compound is described across published abstracts,
+not assay measurements, so a ceiling of this kind is what one would expect. That
+is the question the benchmark leaves open — whether a richer representation would
+help at all, or whether the labels are the binding constraint.
+
+Full numbers in [`results/phase1/`](results/phase1/); the Phase 0 tabular-only
+run is in [`results/phase0/`](results/phase0/).
+
+> The Phase 0 baseline published 0.8065 [0.7581, 0.8481]. Re-running it inside the
+> Phase 1 notebook returns 0.8044 [0.7550, 0.8450] — a 0.002 difference
+> attributable to library versions — which is what confirms the two sets of
+> numbers sit on the same scale.
 
 ---
 
@@ -77,11 +105,11 @@ For the later benchmark stage, the final curated dataset was paired with:
 ### 4. Baseline benchmarking
 I benchmarked traditional ML models and selected the best saved baseline based on nested cross-validation performance.
 
-### 5. Follow-up exploration
-The notebook history also includes exploratory follow-up work related to:
-- inhibitor/substrate dual modeling
-- graph-based modeling attempts
-- interpretability / XAI visualization
+### 5. Graph-model comparison (Phase 1)
+Molecular graphs built from the same 522 structures, scored on the same folds as
+the baseline: GCN, GAT and GINE against the Morgan + descriptor Random Forest.
+The notebook history also holds earlier exploratory work on inhibitor/substrate
+dual modelling and interpretability (XAI) visualisation.
 
 ---
 
@@ -97,12 +125,15 @@ The notebook history also includes exploratory follow-up work related to:
   - `project_story.md`
   - `data_dictionary.md`
   - `limitations.md`
+- `AI_USAGE.md`
 - `notebooks/`
   - `01_sohnproject1_origin_archive.ipynb`
   - `02_newpgp_dual_model_expansion.ipynb`
   - `03_8_15_all_newpgp_main.ipynb`
+  - `pgp_phase1_benchmark.ipynb`
 - `results/`
   - `phase0/`
+  - `phase1/`
   - `xai/`
 
 ---
@@ -118,6 +149,12 @@ Later expansion of the project toward inhibitor/substrate-oriented problem frami
 ### `03_8_15_all_newpgp_main.ipynb`
 The most polished later-stage notebook, centered on the final **522-compound inhibitor dataset** and cleaner benchmark reporting.
 
+### `pgp_phase1_benchmark.ipynb`
+Phase 1. Rebuilds the Phase 0 baseline as a protocol check, then scores GCN, GAT
+and GINE on the same folds. Reads the dataset from this repository over HTTPS and
+checkpoints each stage, so an interrupted session resumes. Written with AI
+assistance — see [`AI_USAGE.md`](AI_USAGE.md).
+
 ---
 
 ## Included Results
@@ -130,6 +167,12 @@ Saved outputs for the traditional ML benchmark stage, including:
 - learning curve data
 - benchmark visualization figure
 
+### `results/phase1/`
+Graph-model comparison against the Phase 0 baseline:
+- `phase1_benchmark_results.csv` — summary metrics with confidence intervals
+- `phase1_fold_auc.csv` — per-fold ROC-AUC for every model
+- `phase1_report.txt` — protocol, results and the protocol check
+
 ### `results/xai/`
 Representative interpretability output images from later exploratory analysis.
 
@@ -139,7 +182,9 @@ Representative interpretability output images from later exploratory analysis.
 
 - Labels in this repository are **literature-derived**, not assay-standardized ground truth labels.
 - This repository is a **portfolio-style reconstruction**, not a full raw archive of every intermediate file generated during the project.
-- Exploratory GNN / AttentiveFP work is included as notebook history, but **not presented as a headline benchmark** because the current saved archive does not contain final Phase1 result files.
+- The graph models were written and trained in July 2025, but their outputs were cleared before the notebooks were archived and the Phase 1 result directories were left empty. The graph figures reported here come from a **re-run under the Phase 0 protocol** and should be read as a reproduction, not as the original results. The earlier AttentiveFP runs were not reproduced.
+- Five outer folds give the comparison limited resolution: it can show that no graph model reached the baseline, but not that each one is significantly below it.
+- See [`AI_USAGE.md`](AI_USAGE.md) for how the Phase 1 notebook was written.
 
 ---
 
